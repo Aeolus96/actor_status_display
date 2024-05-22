@@ -9,7 +9,7 @@ import rospkg
 
 
 def publish_image():
-    rospy.init_node("actor_status_node", anonymous=True)
+    rospy.init_node("actor_status_display_node", anonymous=True)
     image_pub = rospy.Publisher("wled_bridge/image", Image, queue_size=1)
     rate = rospy.Rate(0.1)  # Adjust the publishing Hz rate as needed
 
@@ -17,7 +17,7 @@ def publish_image():
 
     while not rospy.is_shutdown():
         # Load a sample PNG image
-        image_path = rospkg.RosPack().get_path("actor_status") + "/images/E_Stop.png"
+        image_path = rospkg.RosPack().get_path("actor_status_display") + "/images/E_Stop.png"
 
         if os.path.exists(image_path):
             # Read the image

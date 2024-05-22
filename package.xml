@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>actor_status</name>
+  <name>actor_status_display</name>
   <version>0.0.0</version>
-  <description>The actor_status package</description>
+  <description>The actor_status_display package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
