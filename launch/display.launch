@@ -1,0 +1,12 @@
+<launch>
+
+  <arg name="wled_device_address" default="4.3.2.1" /> <!-- WLED IP Address / Default AP mode address -->
+
+  <include file="$(find wled_bridge)/launch/start_wled_server.launch">
+    <arg name="wled_device_address" value="$(arg wled_device_address)" />
+  </include>
+
+  <node pkg="actor_status_display" type="actor_status_display.py" name="actor_status_display"
+    output="screen" />
+
+</launch>
