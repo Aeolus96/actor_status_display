@@ -58,11 +58,12 @@ class ImagePublisher:
         self.bridge = CvBridge()
 
     def filename_callback(self, msg):
-        filename = msg.data
+        input_imgs = msg.data.split()
         # image_path = rospkg.RosPack().get_path("actor_status_display") + f"/images/{filename}.png"
         
         #New Dynamic Image Generator
-        cv_image = self.create_image("MAIN","PED","LBLANK") # ADD INPUT MESSAGES HERE TO CHANGE THEM
+        print(input_imgs)
+        cv_image = self.create_image(input_imgs) # ADD INPUT MESSAGES HERE TO CHANGE THEM
         ros_image_msg = self.bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")
         self.image_pub.publish(ros_image_msg)
         # if os.path.exists(image_path):
@@ -79,28 +80,35 @@ class ImagePublisher:
         # else:
         #     rospy.logwarn(f"Image file '{image_path}' does not exist")
             
-    def create_image(self,route_name = "BLANK", detected_name = "SBLANK", lane_name = "LBLANK"):
+    def create_image(self,values = ["BLANK","SBLANK","LBLANK"]):
+        obj =  0
+        lane = 0
         image_path = rospkg.RosPack().get_path("actor_status_display") + "/"
         #Grab the file name if it uses shorthand, otherwise use the name as is
+        route_name = values[0]
         if(route_name in image_dict.keys()):
             route = cv2.imread(f"{image_path}images/{image_dict[route_name]}")
         else:
             route = cv2.imread(f"{image_path}images/{route_name}")
-        if(detected_name in image_dict.keys()):
-            obj = cv2.imread(f"{image_path}images/{image_dict[detected_name]}")
+        if len(values)==3:
+            detected_name = values[1]
+            lane_name = values[2]
+            if(detected_name in image_dict.keys()):
+                obj = cv2.imread(f"{image_path}images/{image_dict[detected_name]}")
+            else:
+                obj = cv2.imread(f"{image_path}images/{detected_name}")
+            if(lane_name in image_dict.keys()):
+                lane = cv2.imread(f"{image_path}images/{image_dict[lane_name]}")
+            else:
+                lane = cv2.imread(f"{image_path}images/{lane_name}")
+
+            # Concat Sign and Lane images
+            obj_lane = cv2.hconcat([obj,lane])
+
+            # Concat the combined sign and lane image with the route image
+            final = cv2.hconcat([route,obj_lane])
         else:
-            obj = cv2.imread(f"{image_path}images/{detected_name}")
-        if(lane_name in image_dict.keys()):
-            lane = cv2.imread(f"{image_path}images/{image_dict[lane_name]}")
-        else:
-            lane = cv2.imread(f"{image_path}images/{lane_name}")
-
-        # Concat Sign and Lane images
-        obj_lane = cv2.hconcat([obj,lane])
-
-        # Concat the combined sign and lane image with the route image
-        final = cv2.hconcat([route,obj_lane])
-
+            final = route
         # Display image for testing
         # cv2.imshow("Finished",im_f)
         # cv2.waitKey(0)
